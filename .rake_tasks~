@@ -1,0 +1,10 @@
+build
+build:checksum
+clean
+clobber
+install
+install:local
+release[remote]
+standard
+standard:fix
+test
