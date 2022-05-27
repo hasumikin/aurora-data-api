@@ -3,7 +3,9 @@
 module AuroraDataApi
   class Repo
     def self.[](model, &block)
-      self.new(model, &block)
+      repo = self.new(model, &block)
+      AuroraDataApi.const_set("#{model.name}Repo".to_sym, repo)
+      repo
     end
 
     def initialize(model, &block)
