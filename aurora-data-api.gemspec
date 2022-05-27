@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
-require_relative "lib/aurora_data_api/version"
+require_relative "lib/aurora-data-api/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "aurora_data_api"
+  spec.name = "aurora-data-api"
   spec.version = AuroraDataApi::VERSION
   spec.authors = ["HASUMI Hitoshi"]
   spec.email = ["hasumikin@gmail.com"]
 
   spec.summary = "A kind of ORM for Amazon Aurora Serverless v1"
   spec.description = "Assuming you are using AWS Lambda as a backend, Aurora Serverless v1 (NOT v2) as a database, and Data API as an adapter"
-  spec.homepage = "https://github.com/hasumikin/aurora_data_api"
+  spec.homepage = "https://github.com/hasumikin/aurora-data-api"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.7.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/hasumikin/aurora_data_api"
-  spec.metadata["changelog_uri"] = "https://github.com/hasumikin/aurora_data_api/blob/master/CHANGELOG.md"
+  spec.metadata["source_code_uri"] = "https://github.com/hasumikin/aurora-data-api"
+  spec.metadata["changelog_uri"] = "https://github.com/hasumikin/aurora-data-api/blob/master/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

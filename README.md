@@ -9,7 +9,7 @@ Assuming you are using AWS Lambda as a backend, Aurora Serverless v1 (NOT v2) as
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'aurora_data_api'
+gem 'aurora-data-api'
 ```
 
 And then execute:
@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install aurora_data_api
+    $ gem install aurora-data-api
 
 ## Usage
 
@@ -123,7 +123,7 @@ As of the current version, the last call `comments.first.entry.user.name` will e
 
 ```sh
 your_app
-├── Gemfile        # It includes `gem 'aurora_data_api'`
+├── Gemfile        # It includes `gem 'aurora-data-api'`
 ├── app
 │   ├── handlers  # You may have Lambda functions here
 │   ├── models
@@ -136,10 +136,10 @@ your_app
 │       └── user_reop.rb
 ├── db
 │   └── shcema.sql
-└── serverless.yml # aurora_data_api is perfect for Serverless Framework
+└── serverless.yml # aurora-data-api is perfect for Serverless Framework
 ```
 
-aurora_data_api doesn't have a generator to initiate the structure.
+aurora-data-api doesn't have a generator to initiate the structure.
 Make it manually instead like:
 
 ```sh
@@ -151,7 +151,7 @@ mkdir -p app/models app/repos db
 The following command overwrites `db/schema.sql` (for only PostgreSQL) by aggregating `app/models/*.rb`
 
 ```sh
-bundle exec aurora_data_api update_schema
+bundle exec aurora-data-api update_schema
 ```
 
 We recommend to use @kokubun's sqldef to manage the migration.
@@ -166,7 +166,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/hasumikin/aurora_data_api. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/hasumikin/aurora_data_api/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/hasumikin/aurora-data-api. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/hasumikin/aurora-data-api/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -174,4 +174,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the AuroraDataApi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/hasumikin/aurora_data_api/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the AuroraDataApi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/hasumikin/aurora-data-api/blob/master/CODE_OF_CONDUCT.md).

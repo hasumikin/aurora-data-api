@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'aurora_data_api/version'
+require 'aurora-data-api/version'
 require 'thor'
 
 Date = "date"
@@ -103,7 +103,7 @@ module AuroraDataApi
 
     desc "version", "Print version"
     def version
-      puts "aurora_data_api v#{AuroraDataApi::VERSION}"
+      puts "aurora-data-api v#{AuroraDataApi::VERSION}"
     end
 
     desc "export", "Overwrite #{DEFAULT_SCHEMA_PATH} by aggregating #{DEFAULT_MODELS_DIR}/*.rb"
@@ -111,8 +111,18 @@ module AuroraDataApi
       Dir.glob("#{DEFAULT_MODELS_DIR}/*.rb").each do |rb|
         load rb
       end
-      puts Schema::CREATE_TABLE
-      puts Schema::ALTER_TABLE
+      if File.exist? DEFAULT_SCHEMA_PATH
+        print "#{DEFAULT_SCHEMA_PATH} exists. Overwrite? [Y/n]: "
+        answer = STDIN.gets.chomp
+        if %w(Y y yes).include?(answer.chomp)
+          File.open DEFAULT_SCHEMA_PATH, "w" do |f|
+            f.write Schema::CREATE_TABLE
+            f.write Schema::ALTER_TABLE
+          end
+        else
+          puts "Abort."
+        end
+      end
     end
   end
 end
