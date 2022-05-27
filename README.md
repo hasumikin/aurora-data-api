@@ -4,6 +4,8 @@ A kind of ORM for Amazon Aurora Serverless v1.
 
 Assuming you are using AWS Lambda as a backend, Aurora Serverless v1 (NOT v2) as a database, and Data API as an adapter.
 
+PostgreSQL is the only target as of now.
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -40,18 +42,12 @@ class User < AuroraDataApi::Model
   end
 end
 
-UserRepo = AuroraDataApi::Repo[User] do
-end
-
 class Entry < AuroraDataApi::Model
   schema do
     col :user,  :User  # User.to_sym
     col :title, String
     col :body,  String
   end
-end
-
-EntryRepo = AuroraDataApi::Repo[Entry] do
 end
 
 class Comment < AuroraDataApi::Model
@@ -61,8 +57,19 @@ class Comment < AuroraDataApi::Model
     col :body,  String
   end
 end
+```
 
-CommentRepo = AuroraDataApi::Repo[Comment] do
+```ruby
+require_relative '../models/user'
+UserDepot = AuroraDataApi::Depot[User] do
+end
+
+require_relative '../models/entry'
+EntryDepot = AuroraDataApi::Depot[Entry] do
+end
+
+require_relative '../models/comment'
+CommentDepot = AuroraDataApi::Depot[Comment] do
 end
 ```
 
@@ -70,30 +77,30 @@ end
 
 ```ruby
 user = User.new(name: "HASUMI Hitoshi", internet_account: "hasumikin")
-user.id                # => nil
-UserRepo.create(user)  # => 1
-user.id                # => 1
+user.id                 # => nil
+UserDepot.create(user)  # => 1
+user.id                 # => 1
 ```
 
 ### Update the user
 
 ```ruby
 user.internet_account = "HASUMIKIN"
-UserRepo.update(user)  # => true (false if failed)
-user.internet_account  # => "HASUMIKIN"
+UserDepot.update(user)  # => true (false if failed)
+user.internet_account   # => "HASUMIKIN"
 ```
 
 ### Delete the user
 
 ```ruby
-UserRepo.delete(user)  # => true (false if failed)
-user.id                # => nil
+UserDepot.delete(user)  # => true (false if failed)
+user.id                 # => nil
 ```
 
 ### Find a user
 
 ```ruby
-hasumikin = UserRepo.select(
+hasumikin = UserDepot.select(
   "internet_account = :internet_account",
   internet_account: "hasumikin"
 ).first
@@ -107,26 +114,26 @@ my_entry = Entry.new(
   title: "My first article",
   body: "Hey, this is an article about Ruby."
 )
-EntryRepo.create(my_entry)
+EntryDepot.create(my_entry)
 ```
 
 ### Update the entry
 
 ```ruby
 my_entry.body = "Hey, this is an article about Ruby whick is a happy language!"
-EntryRepo.update(my_entry)
+EntryDepot.update(my_entry)
 ```
 
 ### Delete the entry
 
 ```ruby
-EntryRepo.delete(my_entry)
+EntryDepot.delete(my_entry)
 ```
 
 ### Select comments
 
 ```ruby
-comments = CommentRepo.select(
+comments = CommentDepot.select(
   "inner join entry on entry.id = comment.entry_id where entry.user_id = :user_id",
   user_id: hasumikin.id
 )
@@ -151,10 +158,10 @@ your_app
 │   │   ├── comment.rb
 │   │   ├── entry.rb
 │   │   └── user.rb
-│   └── repos
-│       ├── comment_repo.rb
-│       ├── entry_reop.rb
-│       └── user_reop.rb
+│   └── depots
+│       ├── comment_depot.rb
+│       ├── entry_depot.rb
+│       └── user_depot.rb
 ├── db
 │   └── shcema.sql
 └── serverless.yml # aurora-data-api is perfect for Serverless Framework
@@ -164,18 +171,30 @@ aurora-data-api doesn't have a generator to initiate the structure.
 Make it manually instead like:
 
 ```sh
-mkdir -p app/models app/repos db
+mkdir -p app/models app/depots db
 ```
+
+## Environment variables
+
+The following variables should be defined:
+
+```ruby
+ENV['PGDATABASE']       # Database name
+ENV['RDS_RESOURCE_ARN'] # Resource ARN of RDS Aurora Serverless
+ENV['RDS_SECRET_ARN']   # Secret ARN that is stored in AWS Secrets Manager
+```
+
+RDS_SECRET_ARN has to be attached to an IAM role of the "application".
 
 ## Migration
 
 The following command overwrites `db/schema.sql` (for only PostgreSQL) by aggregating `app/models/*.rb`
 
 ```sh
-bundle exec aurora-data-api update_schema
+bundle exec aurora-data-api export
 ```
 
-We recommend to use @kokubun's sqldef to manage the migration.
+We recommend to use @k0kubun's sqldef to manage migration.
 
 See [k0kubun/sqldef](https://github.com/k0kubun/sqldef)
 

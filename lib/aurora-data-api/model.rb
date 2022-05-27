@@ -79,7 +79,7 @@ module AuroraDataApi
             if members.include?(col_id) && @struct[col_id]
               col_model = SCHEMA[self.class.name.to_sym][:cols].dig(method_name, :type)
               return nil unless col_model
-              @struct[method_name] = AuroraDataApi.const_get("#{col_model.to_s}Repo".to_sym).select(
+              @struct[method_name] = AuroraDataApi.const_get("#{col_model.to_s}Depot".to_sym).select(
                 %Q/where "#{literal_id}" = :id/, id: @struct[col_id]
               )[0]
             else

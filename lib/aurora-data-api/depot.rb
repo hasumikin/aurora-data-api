@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module AuroraDataApi
-  class Repo
+  class Depot
     def self.[](model, &block)
-      repo = self.new(model, &block)
-      AuroraDataApi.const_set("#{model.name}Repo".to_sym, repo)
-      repo
+      depot = self.new(model, &block)
+      AuroraDataApi.const_set("#{model.name}Depot".to_sym, depot)
+      depot
     end
 
     def initialize(model, &block)
@@ -86,7 +86,10 @@ module AuroraDataApi
     end
 
     def column_data(meta, col)
-      if meta.type_name == "timestamptz"
+      case meta.type_name
+      when "text"
+        col.value.gsub("''", "'")
+      when "timestamptz"
         Time.parse(col.value) + 9*60*60 # workaround
       else
         col.value
