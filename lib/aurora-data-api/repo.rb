@@ -13,45 +13,71 @@ module AuroraDataApi
     end
 
     def table_name
-      @table_name ||= @model::SCHEMA[@model.name.to_sym][:table_name] || "#{@model.to_s.downcase}s"
+      @table_name ||= Model::SCHEMA[@model.name.to_sym][:table_name] || "#{@model.to_s.downcase}s"
     end
 
-    def create(item)
+    def create(obj)
+      params = Hash.new.tap do |hash|
+        obj.members.each do |member|
+          obj.send(member).then{|v| hash[member] = v if v}
+        end
+      end
+      raise ArgumentError, "All attributes are nil" if params.empty?
+      res = query(<<~SQL, **params)
+        INSERT INTO "#{obj.table_name}"
+          (#{params.keys.map{|k|"\"#{k}\""}.join(",")})
+          VALUES
+          (#{params.keys.map{|k|":#{k}"}.join(",")})
+          RETURNING "#{obj.literal_id}";
+      SQL
+      obj.set_id(res.records[0][0].value)
     end
 
     def update(item)
+      if true
+        true
+      else
+        false
+      end
     end
 
     def delete(item)
+      if true
+        true
+      else
+        false
+      end
     end
 
     def select(str, **params)
       result = query("select * from \"#{table_name}\" #{str};", **params)
       related_objects = Hash.new
       result.records.map do |record|
-        relations = Hash.new
+        relationships = Hash.new
         attributes = Hash.new.tap do |attrribute|
           result.column_metadata.each_with_index do |meta, index|
             if meta.table_name == table_name.to_s
               attrribute[meta.name.to_sym] = column_data(meta, record[index])
             else
               table_sym = meta.table_name.to_sym
-              if @model::RELATIONS[table_sym]
-                relations[table_sym] ||= Hash.new
-                relations[table_sym][meta.name.to_sym] = column_data(meta, record[index])
+              name, rel_model = @model.relationship_by(table_sym)
+              if name
+                relationships[name] ||= Hash.new
+                relationships[name][:attr] ||= Hash.new
+                relationships[name][:model] ||= rel_model
+                relationships[name][:attr][meta.name.to_sym] = column_data(meta, record[index])
               end
             end
           end
         end
-        relations.each do |table_sym, att|
-          model = @model::RELATIONS[table_sym]
-          related_objects[table_sym] ||= Hash.new
-          id = relations[table_sym][@model::SCHEMA[@model.name.to_sym][:literal_id]]
-          unless obj = related_objects.dig(table_sym, id)
-            obj = Kernel.const_get(model[:model]).new(**relations[table_sym])
-            related_objects[table_sym][id] = obj
+        relationships.each do |name, data|
+          related_objects[name] ||= Hash.new
+          id = data[:attr][Model::SCHEMA[@model.name.to_sym][:literal_id]]
+          unless obj = related_objects.dig(name, id)
+            obj = Kernel.const_get(data[:model]).new(**data[:attr])
+            related_objects[name][id] = obj
           end
-          attributes[model[:relation]] = obj
+          attributes[name] = obj
         end
         @model.new(attributes)
       end

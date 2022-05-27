@@ -20,7 +20,7 @@ module AuroraDataApi
       SCHEMA[:literal_id] = lit
     end
 
-    def self.table_name(name)
+    def self.table(name)
       SCHEMA[:table_name] = name
     end
 
@@ -61,7 +61,7 @@ module AuroraDataApi
       @create_table << %Q/  "created_at" #{TYPES[Time]} NOT NULL,/
       @create_table << %Q/  "updated_at" #{TYPES[Time]} NOT NULL,/
       @create_table << %Q/  PRIMARY KEY ("#{@literal_id}")/
-      @create_table << %Q/);\n\n/
+      @create_table << %Q/);\n/
     end
 
     def col(name, type, **params)
@@ -92,35 +92,61 @@ module AuroraDataApi
           line << " UNIQUE" if v
         end
       end
-      line << ",\n"
+      line << ","
       @create_table << line
     end
   end
 
   class Tool < Thor
     DEFAULT_MODELS_DIR  = "app/models"
-    DEFAULT_SCHEMA_PATH = "db/schema.sql"
+    DEFAULT_OUTPUT_PATH = "db/schema.sql"
 
     desc "version", "Print version"
     def version
       puts "aurora-data-api v#{AuroraDataApi::VERSION}"
     end
 
-    desc "export", "Overwrite #{DEFAULT_SCHEMA_PATH} by aggregating #{DEFAULT_MODELS_DIR}/*.rb"
+    desc "export", "Overwrite #{DEFAULT_OUTPUT_PATH} by aggregating #{DEFAULT_MODELS_DIR}/*.rb"
+    option :models, aliases: :m, default: DEFAULT_MODELS_DIR
+    option :output, aliases: :o, default: DEFAULT_OUTPUT_PATH
     def export
-      Dir.glob("#{DEFAULT_MODELS_DIR}/*.rb").each do |rb|
+      models_dir = options[:models]
+      output_path = options[:output]
+      Dir.glob("#{models_dir}/*.rb").each do |rb|
         load rb
       end
-      if File.exist? DEFAULT_SCHEMA_PATH
-        print "#{DEFAULT_SCHEMA_PATH} exists. Overwrite? [Y/n]: "
+      if Schema::CREATE_TABLE.empty? && Schema::ALTER_TABLE.empty?
+        puts "Nothing to be exported."
+        exit
+      end
+      overwrite = false
+      if File.exist? output_path
+        print "#{output_path} exists. Overwrite? [Y/n]: "
         answer = STDIN.gets.chomp
         if %w(Y y yes).include?(answer.chomp)
-          File.open DEFAULT_SCHEMA_PATH, "w" do |f|
-            f.write Schema::CREATE_TABLE
-            f.write Schema::ALTER_TABLE
-          end
+          overwrite = true
         else
           puts "Abort."
+          exit
+        end
+      else
+        overwrite = true
+      end
+      if overwrite
+        File.open output_path, "w" do |f|
+          f.write <<~COMMENT
+            /*
+             * This file was automatically genarated by the command:
+             *   aurora-data-api export --models #{models_dir} --output #{output_path}
+             *
+             * Genarated at #{Time.now.to_s}
+             *
+             * https://github.com/hasumikin/aurora-data-api
+             */\n
+          COMMENT
+          f.write Schema::CREATE_TABLE.flatten.join("\n")
+          f.write "\n"
+          f.write Schema::ALTER_TABLE.flatten.join("\n")
         end
       end
     end

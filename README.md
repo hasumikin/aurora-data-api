@@ -70,7 +70,24 @@ end
 
 ```ruby
 user = User.new(name: "HASUMI Hitoshi", internet_account: "hasumikin")
-UserRepo.create(user)
+user.id                # => nil
+UserRepo.create(user)  # => 1
+user.id                # => 1
+```
+
+### Update the user
+
+```ruby
+user.internet_account = "HASUMIKIN"
+UserRepo.update(user)  # => true (false if failed)
+user.internet_account  # => "HASUMIKIN"
+```
+
+### Delete the user
+
+```ruby
+UserRepo.delete(user)  # => true (false if failed)
+user.id                # => nil
 ```
 
 ### Find a user
@@ -90,16 +107,20 @@ my_entry = Entry.new(
   title: "My first article",
   body: "Hey, this is an article about Ruby."
 )
-EntryRepo.create!(my_entry)
+EntryRepo.create(my_entry)
 ```
 
 ### Update the entry
 
 ```ruby
-EntryRepo.update!(
-  my_entry
-  body: "Hey, this is an article about Ruby whick is a happy language!"
-)
+my_entry.body = "Hey, this is an article about Ruby whick is a happy language!"
+EntryRepo.update(my_entry)
+```
+
+### Delete the entry
+
+```ruby
+EntryRepo.delete(my_entry)
 ```
 
 ### Select comments
@@ -109,12 +130,12 @@ comments = CommentRepo.select(
   "inner join entry on entry.id = comment.entry_id where entry.user_id = :user_id",
   user_id: hasumikin.id
 )
-comments.class                 #=> Array
-comments.first.class           #=> Comment
-comments.first.body            #=> "I have a question, ..."
-comments.first.entry.class     #=> Entry
-comments.first.entry.title     #=> "My first article"
-comments.first.entry.user.name #=> "HASUMI Hitoshi"
+comments.class                 # => Array
+comments.first.class           # => Comment
+comments.first.body            # => "I have a question, ..."
+comments.first.entry.class     # => Entry
+comments.first.entry.title     # => "My first article"
+comments.first.entry.user.name # => "HASUMI Hitoshi"
 ```
 
 As of the current version, the last call `comments.first.entry.user.name` will execute another query so it may cause an N+1 problem.

@@ -4,7 +4,6 @@ module AuroraDataApi
   class Model
     SCHEMA = Hash.new
     STRUCTS = Hash.new
-    RELATIONS = Hash.new
 
     def self.model_name
       self.to_s.to_sym
@@ -15,7 +14,7 @@ module AuroraDataApi
       SCHEMA[model_name][:literal_id] = lit
     end
 
-    def self.table_name(name)
+    def self.table(name)
       SCHEMA[model_name] ||= Hash.new
       SCHEMA[model_name][:table_name] = name
     end
@@ -24,21 +23,30 @@ module AuroraDataApi
       block.call
       col :created_at, Time
       col :updated_at, Time
-      STRUCTS[model_name] = Struct.new(model_name.to_s, *SCHEMA[model_name].keys)
+      STRUCTS[model_name] = Struct.new(model_name.to_s, *SCHEMA[model_name][:cols].keys)
     end
 
     def self.col(name, type = String, opt = {})
       SCHEMA[model_name] ||= Hash.new
+      SCHEMA[model_name][:cols] ||= Hash.new
       if type.is_a? Symbol
-        SCHEMA[model_name]["#{name}_#{SCHEMA[model_name][:literal_id] || :id}".to_sym] = { type: Integer, opt: opt }
-        RELATIONS[opt[:table_name] || "#{type}s"] = { model: type, relation: name }
+        SCHEMA[model_name][:cols]["#{name}_#{SCHEMA[model_name][:literal_id] || :id}".to_sym] = { type: Integer }
       end
-      SCHEMA[model_name][name] = { type: type, opt: opt }
+      SCHEMA[model_name][:cols][name] = { type: type, opt: opt }
     end
 
     def self.type_of(name)
       type = SCHEMA[model_name][name][:type]
       type.is_a?(Symbol) ? Kernel.const_get(type) : type
+    end
+
+    def self.relationship_by(table_sym)
+      result = Model::SCHEMA[self.name.to_sym].select { |_k, v|
+        v.is_a? Hash
+      }.select { |_k, v|
+        v.dig(:opt, :table) == table_sym
+      }
+      result.count > 0 ? [result.keys[0], result.values[0][:type]] : nil
     end
 
     def initialize(**params)
@@ -62,16 +70,40 @@ module AuroraDataApi
         @struct[string_name.chop] = args[0]
       elsif string_name[-3, 3] == "_#{literal_id}"
         @struct[string_name.sub(/_#{literal_id}\z/, '')]&.id || @struct[method_name]
-      elsif method_name == SCHEMA[self.class.model_name][:literal_id]
-        instance_variable_get("@#{literal_id}")
+      elsif method_name == literal_id
+        @id
       else
-        @struct[method_name]
+        if members.include?(method_name)
+          if @struct[method_name].nil?
+            col_id = "#{method_name}_#{literal_id}".to_sym
+            if members.include?(col_id) && @struct[col_id]
+              repo = SCHEMA[self.class.name.to_sym][:cols].dig(method_name, :opt, :repo)
+              return nil unless repo
+              @struct[method_name] = Kernel.const_get(repo).select(
+                %Q/where "#{literal_id}" = :id/, id: @struct[col_id]
+              )[0]
+            else
+              nil
+            end
+          else
+            @struct[method_name]
+          end
+        else
+          super
+        end
       end
     end
 
-    private def literal_id
+    def table_name
+      SCHEMA[self.class.name.to_sym][:table_name]
+    end
+
+    def literal_id
       SCHEMA[self.class.model_name][:literal_id] || :id
+    end
+
+    def set_id(id)
+      @id = id
     end
   end
 end
-
