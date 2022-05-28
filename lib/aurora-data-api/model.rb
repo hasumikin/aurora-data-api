@@ -104,6 +104,15 @@ module AuroraDataApi
       SCHEMA[self.class.model_name][:literal_id] || :id
     end
 
+    def build_params(include_id: false)
+      Hash.new.tap do |hash|
+        self.members.each do |member|
+          next if member == literal_id && !include_id
+          self.send(member).then{|v| hash[member] = v if v}
+        end
+      end
+    end
+
     def _set_id(id)
       @id = id
     end

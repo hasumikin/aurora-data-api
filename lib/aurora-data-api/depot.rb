@@ -19,28 +19,27 @@ module AuroraDataApi
     end
 
     def insert(obj)
-      params = Hash.new.tap do |hash|
-        obj.members.each do |member|
-          obj.send(member).then{|v| hash[member] = v if v}
-        end
-      end
+      params = obj.build_params
       raise ArgumentError, "All attributes are nil" if params.empty?
       res = query(<<~SQL, **params)
         INSERT INTO "#{obj.table_name}"
-          (#{params.keys.map{|k|"\"#{k}\""}.join(",")})
+          (#{params.keys.map{|k| "\"#{k}\""}.join(",")})
           VALUES
-          (#{params.keys.map{|k|":#{k}"}.join(",")})
+          (#{params.keys.map{|k| ":#{k}"}.join(",")})
           RETURNING "#{obj.literal_id}";
       SQL
       obj._set_id(res.records[0][0].value)
     end
 
     def update(obj)
-      if true
-        true
-      else
-        false
-      end
+      params = obj.build_params(include_id: true)
+      raise ArgumentError, "All attributes are nil" if params.empty?
+      res = query(<<~SQL, **params)
+        UPDATE "#{obj.table_name}" SET
+          #{params.keys.reject{|k| k == obj.literal_id}.map{|k| "\"#{k}\" = :#{k}"}.join(", ")}
+          WHERE "#{obj.literal_id}" = :#{obj.literal_id};
+      SQL
+      true
     end
 
     def delete(obj)
