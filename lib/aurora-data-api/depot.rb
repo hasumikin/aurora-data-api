@@ -3,14 +3,15 @@
 module AuroraDataApi
   class Depot
     def self.[](model, &block)
-      depot = new(model, &block)
+      # @type var block: Proc
+      depot = new(model, block)
       AuroraDataApi.const_set("#{model.name}Depot".to_sym, depot)
       depot
     end
 
-    def initialize(model, &block)
+    def initialize(model, block)
       @model = model
-      instance_eval(&block)
+      instance_eval { block.call }
       @data_service = DataService.new
     end
 

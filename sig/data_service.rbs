@@ -1,0 +1,7 @@
+module AuroraDataApi
+  class DataService
+    def initialize: () -> void
+    def execute: (Hash[Symbol, untyped] hash, ?bool without_database) -> untyped
+    def offline_config_update: () -> void
+  end
+end

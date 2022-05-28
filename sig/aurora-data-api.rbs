@@ -1,0 +1,20 @@
+module AuroraDataApi
+  Error: StandardError
+end
+
+class Date
+end
+
+module Aws
+  def self.config: -> Hash[Symbol, untyped]
+
+  class Credentials
+    def initialize: (String, String) -> untyped
+  end
+
+  module RDSDataService
+    class Client
+      def initialize: (Hash[Symbol, String]) -> void
+    end
+  end
+end

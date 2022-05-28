@@ -9,3 +9,6 @@ module AuroraDataApi
   class Error < StandardError; end
   # Your code goes here...
 end
+
+class Date
+end

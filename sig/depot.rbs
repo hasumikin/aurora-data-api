@@ -1,0 +1,20 @@
+# TypeProf 0.21.2
+
+# Classes
+module AuroraDataApi
+  class Depot
+    @model: untyped
+    @data_service: DataService
+    @table_name: String
+
+    def self.[]: (singleton(Model) model) -> Depot
+    def initialize: (singleton(Model) model, Proc block) -> void
+    def table_name: -> String
+    def insert: (untyped obj) -> untyped
+    def update: (untyped obj) -> true
+    def delete: (untyped obj) -> true
+    def select: (untyped str, **untyped) -> untyped
+    def column_data: (untyped meta, untyped col) -> untyped
+    def query: (String str, **untyped) -> untyped
+  end
+end

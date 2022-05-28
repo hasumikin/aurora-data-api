@@ -1,0 +1,3 @@
+module AuroraDataApi
+  VERSION: String
+end

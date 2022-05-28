@@ -20,8 +20,8 @@ module AuroraDataApi
       }
     end
 
-    def execute(hash, without_databalse = false)
-      if without_databalse
+    def execute(hash, without_database = false)
+      if without_database
         @client.execute_statement(
           hash.merge(@execute_params.reject { |k, _v| k == :database })
         )

@@ -1,0 +1,13 @@
+# TypeProf 0.21.2
+
+# Classes
+module AuroraDataApi
+  class Environment
+    def self.offline?: -> bool
+    def self.offline_endpoint: -> String
+    def self.database_name: -> String?
+    def self.region: -> String
+    def self.secret_arn: -> String?
+    def self.resource_arn: -> String?
+  end
+end

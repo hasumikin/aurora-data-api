@@ -26,7 +26,7 @@ module AuroraDataApi
       STRUCTS[model_name] = Struct.new(model_name.to_s, *SCHEMA[model_name][:cols].keys)
     end
 
-    def self.col(name, type = String, opt = {})
+    def self.col(name, type, opt = {})
       SCHEMA[model_name] ||= {}
       SCHEMA[model_name][:cols] ||= {}
       if type.is_a? Symbol
@@ -35,13 +35,8 @@ module AuroraDataApi
       SCHEMA[model_name][:cols][name] = {type: type, opt: opt}
     end
 
-    def self.type_of(name)
-      type = SCHEMA[model_name][name][:type]
-      type.is_a?(Symbol) ? Kernel.const_get(type) : type
-    end
-
     def self.relationship_by(table_sym)
-      result = Model::SCHEMA[name.to_sym].select { |_k, v|
+      result = Model::SCHEMA[name&.to_sym].select { |_k, v|
         v.is_a? Hash
       }.select { |_k, v|
         v.dig(:opt, :table) == table_sym
@@ -53,7 +48,7 @@ module AuroraDataApi
       @struct = STRUCTS[self.class.model_name].new
       params.each do |col, val|
         if col == literal_id
-          @id = params[literal_id]
+          @id = val if val.is_a?(Integer)
         else
           @struct[col] = val
         end
@@ -82,7 +77,7 @@ module AuroraDataApi
         if @struct[method_name].nil?
           col_id = "#{method_name}_#{literal_id}".to_sym
           if members.include?(col_id) && @struct[col_id]
-            col_model = SCHEMA[self.class.name.to_sym][:cols].dig(method_name, :type)
+            col_model = SCHEMA[self.class.name&.to_sym][:cols].dig(method_name, :type)
             return nil unless col_model
             @struct[method_name] = AuroraDataApi.const_get("#{col_model}Depot".to_sym).select(
               %(where "#{literal_id}" = :id), id: @struct[col_id]
@@ -97,7 +92,7 @@ module AuroraDataApi
     end
 
     def table_name
-      SCHEMA[self.class.name.to_sym][:table_name]
+      SCHEMA[self.class.name&.to_sym][:table_name]
     end
 
     def literal_id
@@ -120,8 +115,7 @@ module AuroraDataApi
     def _destroy
       @id = nil
       @struct.members.each do |member|
-        next if member == literal_id
-        @struct[member] = nil
+        @struct[member] = nil unless member == literal_id
       end
       true
     end
