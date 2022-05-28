@@ -1,20 +1,21 @@
 #!/usr/bin/env ruby
 
-require 'aurora-data-api/version'
-require 'thor'
+require "aurora-data-api/version"
+require "thor"
 
-Date = "date"
+class Date
+end
 
 module AuroraDataApi
   class Error < StandardError; end
 
   class Schema
-    CREATE_TABLE = Array.new
-    ALTER_TABLE = Array.new
+    CREATE_TABLE = []
+    ALTER_TABLE = []
   end
 
   class Model
-    SCHEMA = { literal_id: :id }
+    SCHEMA = {literal_id: :id}
 
     def self.literal_id(lit)
       SCHEMA[:literal_id] = lit
@@ -36,11 +37,11 @@ module AuroraDataApi
 
   class Converter
     TYPES = {
-      ::Date    => ::Date,
-      ::Time    => "timestamp with time zone",
-      ::String  => "text",
+      ::Date => "date",
+      ::Time => "timestamp with time zone",
+      ::String => "text",
       ::Integer => "bigint",
-      ::Float   => "double precision"
+      ::Float => "double precision"
     }
 
     def initialize(schema, klass)
@@ -53,15 +54,15 @@ module AuroraDataApi
     attr_reader :create_table, :alter_table
 
     def head
-      @create_table << %Q/CREATE TABLE "#{@table_name}" (/
-      @create_table << %Q/  "#{@literal_id}" bigint NOT NULL GENERATED ALWAYS AS IDENTITY,/
+      @create_table << %/CREATE TABLE "#{@table_name}" (/
+      @create_table << %(  "#{@literal_id}" bigint NOT NULL GENERATED ALWAYS AS IDENTITY,)
     end
 
     def tail
-      @create_table << %Q/  "created_at" #{TYPES[Time]} NOT NULL,/
-      @create_table << %Q/  "updated_at" #{TYPES[Time]} NOT NULL,/
-      @create_table << %Q/  PRIMARY KEY ("#{@literal_id}")/
-      @create_table << %Q/);\n/
+      @create_table << %(  "created_at" #{TYPES[Time]} NOT NULL,)
+      @create_table << %(  "updated_at" #{TYPES[Time]} NOT NULL,)
+      @create_table << %/  PRIMARY KEY ("#{@literal_id}")/
+      @create_table << %/);\n/
     end
 
     def col(name, type, **params)
@@ -69,11 +70,11 @@ module AuroraDataApi
       case type
       when Symbol
         col_name = "#{name}_#{@literal_id}"
-        line << %Q/"#{col_name}" /
+        line << %("#{col_name}" )
         line << TYPES[Integer]
-        @alter_table << %Q/ALTER TABLE ONLY "#{@table_name}" ADD CONSTRAINT "#{@table_name}_#{col_name}_fkey" FOREIGN KEY ("#{col_name}") REFERENCES "#{params[:table_name]}" ("#{@literal_id}");/
+        @alter_table << %/ALTER TABLE ONLY "#{@table_name}" ADD CONSTRAINT "#{@table_name}_#{col_name}_fkey" FOREIGN KEY ("#{col_name}") REFERENCES "#{params[:table_name]}" ("#{@literal_id}");/
       else
-        line << %Q/"#{name}" /
+        line << %("#{name}" )
         line << TYPES[type]
       end
       params.each do |k, v|
@@ -82,11 +83,11 @@ module AuroraDataApi
           line << " NOT NULL" unless v
         when :default
           line << " DEFAULT "
-          case v
+          line << case v
           when String, Symbol
-            line << "'#{v}'"
+            "'#{v}'"
           else
-            line << "#{v}"
+            v.to_s
           end
         when :unique
           line << " UNIQUE" if v
@@ -98,7 +99,7 @@ module AuroraDataApi
   end
 
   class Tool < Thor
-    DEFAULT_MODELS_DIR  = "app/models"
+    DEFAULT_MODELS_DIR = "app/models"
     DEFAULT_OUTPUT_PATH = "db/schema.sql"
 
     desc "version", "Print version"
@@ -122,8 +123,8 @@ module AuroraDataApi
       overwrite = false
       if File.exist? output_path
         print "#{output_path} exists. Overwrite? [Y/n]: "
-        answer = STDIN.gets.chomp
-        if %w(Y y yes).include?(answer.chomp)
+        answer = $stdin.gets.chomp
+        if %w[Y y yes].include?(answer.chomp)
           overwrite = true
         else
           puts "Abort."
@@ -139,7 +140,7 @@ module AuroraDataApi
              * This file was automatically genarated by the command:
              *   aurora-data-api export --models #{models_dir} --output #{output_path}
              *
-             * Genarated at #{Time.now.to_s}
+             * Genarated at #{Time.now}
              *
              * https://github.com/hasumikin/aurora-data-api
              */\n

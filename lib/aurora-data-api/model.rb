@@ -2,20 +2,20 @@
 
 module AuroraDataApi
   class Model
-    SCHEMA = Hash.new
-    STRUCTS = Hash.new
+    SCHEMA = {}
+    STRUCTS = {}
 
     def self.model_name
-      self.to_s.to_sym
+      to_s.to_sym
     end
 
     def self.literal_id(lit)
-      SCHEMA[model_name] ||= Hash.new
+      SCHEMA[model_name] ||= {}
       SCHEMA[model_name][:literal_id] = lit
     end
 
     def self.table(name)
-      SCHEMA[model_name] ||= Hash.new
+      SCHEMA[model_name] ||= {}
       SCHEMA[model_name][:table_name] = name
     end
 
@@ -27,12 +27,12 @@ module AuroraDataApi
     end
 
     def self.col(name, type = String, opt = {})
-      SCHEMA[model_name] ||= Hash.new
-      SCHEMA[model_name][:cols] ||= Hash.new
+      SCHEMA[model_name] ||= {}
+      SCHEMA[model_name][:cols] ||= {}
       if type.is_a? Symbol
-        SCHEMA[model_name][:cols]["#{name}_#{SCHEMA[model_name][:literal_id] || :id}".to_sym] = { type: Integer }
+        SCHEMA[model_name][:cols]["#{name}_#{SCHEMA[model_name][:literal_id] || :id}".to_sym] = {type: Integer}
       end
-      SCHEMA[model_name][:cols][name] = { type: type, opt: opt }
+      SCHEMA[model_name][:cols][name] = {type: type, opt: opt}
     end
 
     def self.type_of(name)
@@ -41,7 +41,7 @@ module AuroraDataApi
     end
 
     def self.relationship_by(table_sym)
-      result = Model::SCHEMA[self.name.to_sym].select { |_k, v|
+      result = Model::SCHEMA[name.to_sym].select { |_k, v|
         v.is_a? Hash
       }.select { |_k, v|
         v.dig(:opt, :table) == table_sym
@@ -66,33 +66,33 @@ module AuroraDataApi
       [literal_id] + @struct.members
     end
 
+    def respond_to_missing?(symbol, include_private)
+      true
+    end
+
     def method_missing(method_name, *args, &block)
       string_name = method_name.to_s
       if string_name[-1] == "="
         @struct[string_name.chop] = args[0]
       elsif string_name[-3, 3] == "_#{literal_id}"
-        @struct[string_name.sub(/_#{literal_id}\z/, '')]&.id || @struct[method_name]
+        @struct[string_name.sub(/_#{literal_id}\z/, "")]&.id || @struct[method_name]
       elsif method_name == literal_id
         @id
-      else
-        if members.include?(method_name)
-          if @struct[method_name].nil?
-            col_id = "#{method_name}_#{literal_id}".to_sym
-            if members.include?(col_id) && @struct[col_id]
-              col_model = SCHEMA[self.class.name.to_sym][:cols].dig(method_name, :type)
-              return nil unless col_model
-              @struct[method_name] = AuroraDataApi.const_get("#{col_model.to_s}Depot".to_sym).select(
-                %Q/where "#{literal_id}" = :id/, id: @struct[col_id]
-              )[0]
-            else
-              nil
-            end
-          else
-            @struct[method_name]
+      elsif members.include?(method_name)
+        if @struct[method_name].nil?
+          col_id = "#{method_name}_#{literal_id}".to_sym
+          if members.include?(col_id) && @struct[col_id]
+            col_model = SCHEMA[self.class.name.to_sym][:cols].dig(method_name, :type)
+            return nil unless col_model
+            @struct[method_name] = AuroraDataApi.const_get("#{col_model}Depot".to_sym).select(
+              %(where "#{literal_id}" = :id), id: @struct[col_id]
+            )[0]
           end
         else
-          super
+          @struct[method_name]
         end
+      else
+        super
       end
     end
 
@@ -105,10 +105,10 @@ module AuroraDataApi
     end
 
     def build_params(include_id: false)
-      Hash.new.tap do |hash|
-        self.members.each do |member|
+      {}.tap do |hash|
+        members.each do |member|
           next if member == literal_id && !include_id
-          self.send(member).then{|v| hash[member] = v if v}
+          send(member).then { |v| hash[member] = v if v }
         end
       end
     end

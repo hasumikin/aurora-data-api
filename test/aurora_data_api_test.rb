@@ -9,7 +9,7 @@ class AuroraDataApiTest < Test::Unit::TestCase
     end
   end
 
-  test "something useful" do
-    assert_equal("expected", "actual")
-  end
+  #  test "something useful" do
+  #    assert_equal("expected", "actual")
+  #  end
 end

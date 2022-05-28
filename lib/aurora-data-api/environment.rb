@@ -2,7 +2,6 @@
 
 module AuroraDataApi
   class Environment
-
     # Resources about "OFFLINE":
     #  https://www.serverless.com/plugins/serverless-offline
     #  https://github.com/koxudaxi/local-data-api
@@ -16,7 +15,7 @@ module AuroraDataApi
     end
 
     def self.database_name
-      ENV['PGDATABASE'] || ENV['MYSQL_DATABASE']
+      ENV["PGDATABASE"] || ENV["MYSQL_DATABASE"]
     end
 
     def self.region
@@ -27,7 +26,7 @@ module AuroraDataApi
       if offline?
         "arn:aws:secretsmanager:us-east-1:123456789012:secret:dummy"
       else
-        ENV['RDS_SECRET_ARN']
+        ENV["RDS_SECRET_ARN"]
       end
     end
 
@@ -35,7 +34,7 @@ module AuroraDataApi
       if offline?
         "arn:aws:rds:us-east-1:123456789012:cluster:dummy"
       else
-        ENV['RDS_RESOURCE_ARN']
+        ENV["RDS_RESOURCE_ARN"]
       end
     end
   end

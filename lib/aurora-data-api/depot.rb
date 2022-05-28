@@ -3,14 +3,14 @@
 module AuroraDataApi
   class Depot
     def self.[](model, &block)
-      depot = self.new(model, &block)
+      depot = new(model, &block)
       AuroraDataApi.const_set("#{model.name}Depot".to_sym, depot)
       depot
     end
 
     def initialize(model, &block)
       @model = model
-      self.instance_eval(&block)
+      instance_eval(&block)
       @data_service = DataService.new
     end
 
@@ -23,9 +23,9 @@ module AuroraDataApi
       raise ArgumentError, "All attributes are nil" if params.empty?
       res = query(<<~SQL, **params)
         INSERT INTO "#{obj.table_name}"
-          (#{params.keys.map{|k| "\"#{k}\""}.join(",")})
+          (#{params.keys.map { |k| "\"#{k}\"" }.join(",")})
           VALUES
-          (#{params.keys.map{|k| ":#{k}"}.join(",")})
+          (#{params.keys.map { |k| ":#{k}" }.join(",")})
           RETURNING "#{obj.literal_id}";
       SQL
       obj._set_id(res.records[0][0].value)
@@ -34,9 +34,9 @@ module AuroraDataApi
     def update(obj)
       params = obj.build_params(include_id: true)
       raise ArgumentError, "All attributes are nil" if params.empty?
-      res = query(<<~SQL, **params)
+      query(<<~SQL, **params)
         UPDATE "#{obj.table_name}" SET
-          #{params.keys.reject{|k| k == obj.literal_id}.map{|k| "\"#{k}\" = :#{k}"}.join(", ")}
+          #{params.keys.reject { |k| k == obj.literal_id }.map { |k| "\"#{k}\" = :#{k}" }.join(", ")}
           WHERE "#{obj.literal_id}" = :#{obj.literal_id};
       SQL
       true
@@ -52,10 +52,10 @@ module AuroraDataApi
 
     def select(str, **params)
       result = query("select * from \"#{table_name}\" #{str};", **params)
-      related_objects = Hash.new
+      related_objects = {}
       result.records.map do |record|
-        relationships = Hash.new
-        attributes = Hash.new.tap do |attrribute|
+        relationships = {}
+        attributes = {}.tap do |attrribute|
           result.column_metadata.each_with_index do |meta, index|
             if meta.table_name == table_name.to_s
               attrribute[meta.name.to_sym] = column_data(meta, record[index])
@@ -63,8 +63,8 @@ module AuroraDataApi
               table_sym = meta.table_name.to_sym
               name, rel_model = @model.relationship_by(table_sym)
               if name
-                relationships[name] ||= Hash.new
-                relationships[name][:attr] ||= Hash.new
+                relationships[name] ||= {}
+                relationships[name][:attr] ||= {}
                 relationships[name][:model] ||= rel_model
                 relationships[name][:attr][meta.name.to_sym] = column_data(meta, record[index])
               end
@@ -72,9 +72,10 @@ module AuroraDataApi
           end
         end
         relationships.each do |name, data|
-          related_objects[name] ||= Hash.new
+          related_objects[name] ||= {}
           id = data[:attr][Model::SCHEMA[@model.name.to_sym][:literal_id]]
-          unless obj = related_objects.dig(name, id)
+          obj = related_objects.dig(name, id)
+          unless obj
             obj = Kernel.const_get(data[:model]).new(**data[:attr])
             related_objects[name][id] = obj
           end
@@ -89,7 +90,7 @@ module AuroraDataApi
       when "text"
         col.value.gsub("''", "'")
       when "timestamptz"
-        Time.parse(col.value) + 9*60*60 # workaround
+        Time.parse(col.value) + 9 * 60 * 60 # workaround
       else
         col.value
       end
@@ -99,7 +100,7 @@ module AuroraDataApi
       @data_service.execute({
         sql: str,
         parameters: params.map do |param|
-          hash = { name: param[0].to_s, value: {} }
+          hash = {name: param[0].to_s, value: {}}
           case param[1]
           when Integer
             hash[:value][:long_value] = param[1]
@@ -114,6 +115,5 @@ module AuroraDataApi
         end
       })
     end
-
   end
 end
