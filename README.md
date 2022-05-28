@@ -1,8 +1,8 @@
-# AuroraDataApi
+# AuroraDataApi [![Ruby](https://github.com/hasumikin/aurora-data-api/actions/workflows/main.yml/badge.svg)](https://github.com/hasumikin/aurora-data-api/actions/workflows/main.yml)
 
 A kind of ORM for Amazon Aurora Serverless v1.
 
-Assuming you are using AWS Lambda as a backend, Aurora Serverless v1 (NOT v2) as a database, and Data API as an adapter.
+Supposing that you are using Ruby (typically on AWS Lambda) as an application, Aurora Serverless v1 (NOT v2) as a database, and Data API as the database adapter.
 
 PostgreSQL is the only target as of now.
 
@@ -106,7 +106,7 @@ user.id                 # => nil
 
 ```ruby
 hasumikin = UserDepot.select(
-  "internet_account = :internet_account",
+  "WHERE internet_account = :internet_account",
   internet_account: "hasumikin"
 ).first
 ```
@@ -205,7 +205,7 @@ RDS_SECRET_ARN has to be attached to an IAM role of the "application".
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test-unit` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
