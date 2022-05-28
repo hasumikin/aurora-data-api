@@ -53,11 +53,16 @@ end
 class Comment < AuroraDataApi::Model
   schema do
     col :user,  :User  # User.to_sym
-    col :entry, :Entry # Entry.to_sym
+    col :entry, :Entry, table: :entries  #...(*)
     col :body,  String
   end
 end
+
+# (*)
+# The plural of "entry" is too difficult for aurora-data-api.
+# So you need to explicitly tell gem the table name.
 ```
+
 
 ```ruby
 require_relative '../models/user'
@@ -147,7 +152,7 @@ comments.first.entry.user.name # => "HASUMI Hitoshi"
 
 As of the current version, the last call `comments.first.entry.user.name` will execute another query so it may cause an N+1 problem.
 
-## Application structure
+## Typical application structure
 
 ```sh
 your_app
@@ -174,18 +179,6 @@ Make it manually instead like:
 mkdir -p app/models app/depots db
 ```
 
-## Environment variables
-
-The following variables should be defined:
-
-```ruby
-ENV['PGDATABASE']       # Database name
-ENV['RDS_RESOURCE_ARN'] # Resource ARN of RDS Aurora Serverless
-ENV['RDS_SECRET_ARN']   # Secret ARN that is stored in AWS Secrets Manager
-```
-
-RDS_SECRET_ARN has to be attached to an IAM role of the "application".
-
 ## Migration
 
 The following command overwrites `db/schema.sql` (for only PostgreSQL) by aggregating `app/models/*.rb`
@@ -197,6 +190,18 @@ bundle exec aurora-data-api export
 We recommend to use @k0kubun's sqldef to manage migration.
 
 See [k0kubun/sqldef](https://github.com/k0kubun/sqldef)
+
+## Environment variables
+
+The following variables should be defined:
+
+```ruby
+ENV['PGDATABASE']       # Database name
+ENV['RDS_RESOURCE_ARN'] # Resource ARN of RDS Aurora Serverless
+ENV['RDS_SECRET_ARN']   # Secret ARN that is stored in AWS Secrets Manager
+```
+
+RDS_SECRET_ARN has to be attached to an IAM role of the "application".
 
 ## Development
 
