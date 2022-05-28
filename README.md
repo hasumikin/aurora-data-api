@@ -73,12 +73,12 @@ CommentDepot = AuroraDataApi::Depot[Comment] do
 end
 ```
 
-### Create a user
+### Insert a user
 
 ```ruby
 user = User.new(name: "HASUMI Hitoshi", internet_account: "hasumikin")
 user.id                 # => nil
-UserDepot.create(user)  # => 1
+UserDepot.insert(user)  # => 1
 user.id                 # => 1
 ```
 
@@ -114,7 +114,7 @@ my_entry = Entry.new(
   title: "My first article",
   body: "Hey, this is an article about Ruby."
 )
-EntryDepot.create(my_entry)
+EntryDepot.insert(my_entry)
 ```
 
 ### Update the entry

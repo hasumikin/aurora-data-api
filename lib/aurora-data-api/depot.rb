@@ -18,7 +18,7 @@ module AuroraDataApi
       @table_name ||= Model::SCHEMA[@model.name.to_sym][:table_name] || "#{@model.to_s.downcase}s"
     end
 
-    def create(obj)
+    def insert(obj)
       params = Hash.new.tap do |hash|
         obj.members.each do |member|
           obj.send(member).then{|v| hash[member] = v if v}
