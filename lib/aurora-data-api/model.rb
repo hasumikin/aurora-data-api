@@ -53,12 +53,14 @@ module AuroraDataApi
       @struct = STRUCTS[self.class.model_name].new
       params.each do |col, val|
         if col == literal_id
-          instance_variable_set("@#{literal_id}", params[literal_id])
+          @id = params[literal_id]
         else
           @struct[col] = val
         end
       end
     end
+
+    attr_reader :id
 
     def members
       [literal_id] + @struct.members
@@ -102,8 +104,17 @@ module AuroraDataApi
       SCHEMA[self.class.model_name][:literal_id] || :id
     end
 
-    def set_id(id)
+    def _set_id(id)
       @id = id
+    end
+
+    def _destroy
+      @id = nil
+      @struct.members.each do |member|
+        next if member == literal_id
+        @struct[member] = nil
+      end
+      true
     end
   end
 end

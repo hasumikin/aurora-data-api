@@ -32,10 +32,10 @@ module AuroraDataApi
           (#{params.keys.map{|k|":#{k}"}.join(",")})
           RETURNING "#{obj.literal_id}";
       SQL
-      obj.set_id(res.records[0][0].value)
+      obj._set_id(res.records[0][0].value)
     end
 
-    def update(item)
+    def update(obj)
       if true
         true
       else
@@ -43,12 +43,12 @@ module AuroraDataApi
       end
     end
 
-    def delete(item)
-      if true
-        true
-      else
-        false
-      end
+    def delete(obj)
+      query(<<~SQL, id: obj.id)
+        DELETE FROM "#{obj.table_name}" WHERE "#{obj.literal_id}" = :id;
+      SQL
+      obj._destroy
+      true
     end
 
     def select(str, **params)
