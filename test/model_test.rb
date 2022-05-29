@@ -34,7 +34,7 @@ class ModelTest < Test::Unit::TestCase
 
   sub_test_case "User" do
     test "User.table_name" do
-      assert_equal "users", User.table_name
+      assert_equal :users, User.table_name
     end
 
     test "User.literal_id" do
@@ -58,7 +58,7 @@ class ModelTest < Test::Unit::TestCase
     end
 
     test "@user.table_name" do
-      assert_equal "users", @user.table_name
+      assert_equal :users, @user.table_name
     end
 
     test "@user.literal_id" do
@@ -75,7 +75,7 @@ class ModelTest < Test::Unit::TestCase
     end
 
     test "Entry.table_name" do
-      assert_equal "entries", Entry.table_name
+      assert_equal :entries, Entry.table_name
     end
 
     test "@entry.user is blank" do
@@ -83,7 +83,7 @@ class ModelTest < Test::Unit::TestCase
     end
 
     test "@entry.table_name" do
-      assert_equal "entries", @entry.table_name
+      assert_equal :entries, @entry.table_name
     end
 
     test "when @entry.user exists" do

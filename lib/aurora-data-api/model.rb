@@ -20,7 +20,7 @@ module AuroraDataApi
 
     def self.table(name)
       SCHEMA[model_name] ||= {}
-      SCHEMA[model_name][:table_name] = name.to_s
+      SCHEMA[model_name][:table_name] = name
     end
 
     def self.schema(&block)
@@ -28,7 +28,7 @@ module AuroraDataApi
       col :created_at, Time
       col :updated_at, Time
       STRUCTS[model_name] = Struct.new(model_name.to_s, *SCHEMA[model_name][:cols].keys)
-      table("#{name.downcase}s") if table_name.nil?
+      table("#{name.to_s.downcase}s".to_sym) if table_name.nil?
     end
 
     def self.col(name, type, opt = {})

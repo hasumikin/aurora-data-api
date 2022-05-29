@@ -10,6 +10,7 @@ module AuroraDataApi
     def self.model_name: -> Symbol
     def self.literal_id: (Symbol lit) -> Symbol
     def self.table: (Symbol name) -> Symbol
+    def self.table_name: -> Symbol
     def self.schema: () { () -> void } -> void
     def self.col: (Symbol name, singleton(String) | singleton(Time) | singleton(Date) | singleton(Integer) | Symbol type, ?Hash[Symbol, Symbol] opt) -> void
     def self.relationship_by: (Symbol table_sym) -> [untyped, untyped]?
