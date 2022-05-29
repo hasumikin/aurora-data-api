@@ -14,9 +14,13 @@ module AuroraDataApi
       SCHEMA[model_name][:literal_id] = lit
     end
 
+    def self.table_name
+      SCHEMA.dig(model_name, :table_name)
+    end
+
     def self.table(name)
       SCHEMA[model_name] ||= {}
-      SCHEMA[model_name][:table_name] = name
+      SCHEMA[model_name][:table_name] = name.to_s
     end
 
     def self.schema(&block)
@@ -24,6 +28,7 @@ module AuroraDataApi
       col :created_at, Time
       col :updated_at, Time
       STRUCTS[model_name] = Struct.new(model_name.to_s, *SCHEMA[model_name][:cols].keys)
+      table("#{self.name.downcase}s") if table_name.nil?
     end
 
     def self.col(name, type, opt = {})
@@ -62,7 +67,8 @@ module AuroraDataApi
     end
 
     def respond_to_missing?(symbol, include_private)
-      true
+      # test-unit calls :encoding in assert_equal
+      !(%i[encoding].include? symbol)
     end
 
     def method_missing(method_name, *args, &block)

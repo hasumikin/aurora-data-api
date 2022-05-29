@@ -48,6 +48,7 @@ GEM
     rbs (2.5.0)
     regexp_parser (2.4.0)
     rexml (3.2.5)
+    rr (3.0.9)
     rubocop (1.29.1)
       parallel (~> 1.10)
       parser (>= 3.1.0.0)
@@ -79,6 +80,9 @@ GEM
       unicode-display_width (>= 1.1.1, < 3)
     test-unit (3.5.3)
       power_assert
+    test-unit-rr (1.0.5)
+      rr (>= 1.1.1)
+      test-unit (>= 2.5.2)
     thor (1.2.1)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
@@ -93,6 +97,7 @@ DEPENDENCIES
   standard (~> 1.3)
   steep
   test-unit (~> 3.0)
+  test-unit-rr
 
 BUNDLED WITH
    2.3.14
