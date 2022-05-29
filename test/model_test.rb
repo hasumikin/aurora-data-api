@@ -64,14 +64,13 @@ class ModelTest < Test::Unit::TestCase
     test "@user.literal_id" do
       assert_equal :id, @user.literal_id
     end
-
   end
 
   sub_test_case "Entry" do
     setup do
       @entry = Entry.new(
         title: "Use Struct",
-        body:  ""
+        body: ""
       )
     end
 
@@ -102,6 +101,4 @@ class ModelTest < Test::Unit::TestCase
       assert_equal @user, @entry.user
     end
   end
-
 end
-

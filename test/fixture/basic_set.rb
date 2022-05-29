@@ -2,8 +2,8 @@
 
 class ::User < AuroraDataApi::Model
   schema do
-    col :name,        String
-    col :height,      Integer
+    col :name, String
+    col :height, Integer
     col :temperature, Float
   end
 end
@@ -11,9 +11,9 @@ end
 class ::Entry < AuroraDataApi::Model
   table :entries
   schema do
-    col :title,      String
-    col :body,       String
-    col :user,       :User
+    col :title, String
+    col :body, String
+    col :user, :User
   end
 end
 
@@ -22,5 +22,3 @@ end
 
 EntryDepot = AuroraDataApi::Depot[Entry] do
 end
-
-

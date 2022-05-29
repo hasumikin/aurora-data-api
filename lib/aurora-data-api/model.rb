@@ -28,7 +28,7 @@ module AuroraDataApi
       col :created_at, Time
       col :updated_at, Time
       STRUCTS[model_name] = Struct.new(model_name.to_s, *SCHEMA[model_name][:cols].keys)
-      table("#{self.name.downcase}s") if table_name.nil?
+      table("#{name.downcase}s") if table_name.nil?
     end
 
     def self.col(name, type, opt = {})
