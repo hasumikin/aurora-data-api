@@ -59,10 +59,13 @@ module AuroraDataApi
     end
 
     def tail
-      @create_table << %(  "created_at" #{TYPES[Time]} NOT NULL,)
-      @create_table << %(  "updated_at" #{TYPES[Time]} NOT NULL,)
       @create_table << %/  PRIMARY KEY ("#{@literal_id}")/
       @create_table << %/);\n/
+    end
+
+    def timestamp
+      @create_table << %(  "created_at" #{TYPES[Time]} NOT NULL,)
+      @create_table << %(  "updated_at" #{TYPES[Time]} NOT NULL,)
     end
 
     def col(name, type, **params)
@@ -72,7 +75,7 @@ module AuroraDataApi
         col_name = "#{name}_#{@literal_id}"
         line << %("#{col_name}" )
         line << TYPES[Integer]
-        @alter_table << %/ALTER TABLE ONLY "#{@table_name}" ADD CONSTRAINT "#{@table_name}_#{col_name}_fkey" FOREIGN KEY ("#{col_name}") REFERENCES "#{params[:table_name]}" ("#{@literal_id}");/
+        @alter_table << %/ALTER TABLE ONLY "#{@table_name}" ADD CONSTRAINT "#{@table_name}_#{col_name}_fkey" FOREIGN KEY ("#{col_name}") REFERENCES "#{params[:table]}" ("#{@literal_id}");/
       else
         line << %("#{name}" )
         line << TYPES[type]
@@ -131,6 +134,7 @@ module AuroraDataApi
           exit
         end
       else
+        FileUtils.touch output_path
         overwrite = true
       end
       if overwrite
