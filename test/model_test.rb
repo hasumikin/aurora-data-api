@@ -143,6 +143,20 @@ class ModelTest < Test::Unit::TestCase
       assert_equal @user, @entry.user
     end
 
+    test "build_params" do
+      @user._set_id(1)
+      @entry.user = @user
+      assert_equal (
+        {
+          body: "",
+          title: "Use Struct",
+          created_at: nil,
+          updated_at: nil,
+          user_id: 1
+        }
+      ), @entry.build_params
+    end
+
     test "attributes" do
       @entry.user = @user
       assert_equal (
