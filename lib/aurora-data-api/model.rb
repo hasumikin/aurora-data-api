@@ -120,7 +120,7 @@ module AuroraDataApi
       {}.tap do |hash|
         members.each do |member|
           next if member == literal_id && !include_id
-          next if SCHEMA[self.class.name.to_sym][:cols][member][:type].is_a? Symbol
+          next if SCHEMA[self.class.name&.to_sym][:cols][member][:type].is_a? Symbol
           send(member).then { |v| hash[member] = v }
         end
       end
