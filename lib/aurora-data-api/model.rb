@@ -125,6 +125,17 @@ module AuroraDataApi
       end
     end
 
+    def attributes
+      {}.tap do |hash|
+        members.each do |member|
+          next if member.to_s.match?(/_#{literal_id}\z/)
+          send(member).then do |v|
+            hash[member] = v.is_a?(Model) ? v.attributes : v
+          end
+        end
+      end
+    end
+
     def _set_id(id)
       @id = id
     end

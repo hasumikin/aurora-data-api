@@ -93,6 +93,19 @@ class ModelTest < Test::Unit::TestCase
       @user.instance_variable_set :@timestamp, false
       assert_equal false, @user.set_timestamp(at: :create)
     end
+
+    test "attributes" do
+      assert_equal (
+        {
+          id: nil,
+          name: "hasumikin",
+          height: 175,
+          temperature: 36.3,
+          created_at: nil,
+          updated_at: nil
+        }
+      ), @user.attributes
+    end
   end
 
   sub_test_case "Entry" do
@@ -128,6 +141,27 @@ class ModelTest < Test::Unit::TestCase
         [@user]
       }
       assert_equal @user, @entry.user
+    end
+
+    test "attributes" do
+      @entry.user = @user
+      assert_equal (
+        {
+          id: nil,
+          body: "",
+          title: "Use Struct",
+          created_at: nil,
+          updated_at: nil,
+          user: {
+            id: nil,
+            name: "hasumikin",
+            height: 175,
+            temperature: 36.3,
+            created_at: nil,
+            updated_at: nil
+          }
+        }
+      ), @entry.attributes
     end
   end
 end

@@ -29,6 +29,7 @@ module AuroraDataApi
     def table_name: -> Symbol
     def literal_id: -> Symbol
     def build_params: (?include_id: bool) -> Hash[Symbol, untyped]
+    def attributes: -> Hash[Symbol, untyped]
     def _set_id: (Integer? id) -> void
     def _destroy: -> bool
   end
