@@ -25,8 +25,6 @@ module AuroraDataApi
 
     def self.schema(&block)
       block.call
-      col :created_at, Time
-      col :updated_at, Time
       STRUCTS[model_name] = Struct.new(model_name.to_s, *SCHEMA[model_name][:cols].keys)
       table("#{name.to_s.downcase}s".to_sym) if table_name.nil?
     end
@@ -40,6 +38,11 @@ module AuroraDataApi
       SCHEMA[model_name][:cols][name] = {type: type, opt: opt}
     end
 
+    def self.timestamp
+      col :created_at, Time, null: false
+      col :updated_at, Time, null: false
+    end
+
     def self.relationship_by(table_sym)
       result = Model::SCHEMA[name&.to_sym].select { |_k, v|
         v.is_a? Hash
@@ -51,6 +54,7 @@ module AuroraDataApi
 
     def initialize(**params)
       @struct = STRUCTS[self.class.model_name].new
+      @timestamp = %i[created_at updated_at].all? { |m| members.include?(m) }
       params.each do |col, val|
         if col == literal_id
           @id = val if val.is_a?(Integer)
@@ -60,7 +64,14 @@ module AuroraDataApi
       end
     end
 
-    attr_reader :id
+    attr_reader :id, :timestamp
+
+    def set_timestamp(at:)
+      return false unless @timestamp
+      self.updated_at = Time.now
+      self.created_at = Time.now if at == :create
+      true
+    end
 
     def members
       [literal_id] + @struct.members

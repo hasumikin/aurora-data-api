@@ -12,12 +12,17 @@ module AuroraDataApi
     def self.table: (Symbol name) -> Symbol
     def self.table_name: -> Symbol
     def self.schema: () { () -> void } -> void
-    def self.col: (Symbol name, singleton(String) | singleton(Time) | singleton(Date) | singleton(Integer) | Symbol type, ?Hash[Symbol, Symbol] opt) -> void
+    def self.col: (Symbol name, singleton(String) | singleton(Time) | singleton(Date) | singleton(Integer) | Symbol type, ?Hash[Symbol, Symbol | bool] opt) -> void
+    def self.timestamp: -> void
     def self.relationship_by: (Symbol table_sym) -> [untyped, untyped]?
     def initialize: (**Hash[Symbol, untyped]) -> void
 
     attr_reader id: Integer?
+    attr_reader timestamp: bool
+    attr_accessor created_at: Time
+    attr_accessor updated_at: Time
 
+    def set_timestamp: (at: :update | :create) -> bool
     def members: -> Array[Symbol]
     def respond_to_missing?: (untyped symbol, untyped include_private) -> true
     def method_missing: (untyped method_name, *untyped args) -> nil

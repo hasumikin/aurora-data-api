@@ -35,6 +35,7 @@ class User < AuroraDataApi::Model
   schema do
     col :name,             String
     col :internet_account, String
+    timestamp # Creates :created_at and :updated_at
   end
 
   def twitter
@@ -47,6 +48,7 @@ class Entry < AuroraDataApi::Model
     col :user,  :User  # User.to_sym
     col :title, String
     col :body,  String
+    timestamp
   end
 end
 
@@ -55,6 +57,7 @@ class Comment < AuroraDataApi::Model
     col :user,  :User  # User.to_sym
     col :entry, :Entry, table: :entries  #...(*)
     col :body,  String
+    timestamp
   end
 end
 

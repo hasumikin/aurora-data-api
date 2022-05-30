@@ -5,6 +5,7 @@ class ::User < AuroraDataApi::Model
     col :name, String
     col :height, Integer
     col :temperature, Float
+    timestamp
   end
 end
 
@@ -14,6 +15,7 @@ class ::Entry < AuroraDataApi::Model
     col :title, String
     col :body, String
     col :user, :User
+    timestamp
   end
 end
 

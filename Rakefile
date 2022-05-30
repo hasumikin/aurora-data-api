@@ -11,7 +11,7 @@ end
 
 require "standard/rake"
 
-task default: %i[test standard steep]
+task default: %i[test steep standard]
 
 task :steep do
   sh "bundle exec steep check"

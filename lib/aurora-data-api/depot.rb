@@ -20,8 +20,8 @@ module AuroraDataApi
     end
 
     def insert(obj)
+      obj.set_timestamp(at: :create)
       params = obj.build_params
-      raise ArgumentError, "All attributes are nil" if params.empty?
       res = query(<<~SQL, **params)
         INSERT INTO "#{obj.table_name}"
           (#{params.keys.map { |k| "\"#{k}\"" }.join(",")})
@@ -33,8 +33,8 @@ module AuroraDataApi
     end
 
     def update(obj)
+      obj.set_timestamp(at: :update)
       params = obj.build_params(include_id: true)
-      raise ArgumentError, "All attributes are nil" if params.empty?
       query(<<~SQL, **params)
         UPDATE "#{obj.table_name}" SET
           #{params.keys.reject { |k| k == obj.literal_id }.map { |k| "\"#{k}\" = :#{k}" }.join(", ")}

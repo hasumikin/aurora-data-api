@@ -32,6 +32,14 @@ class ModelTest < Test::Unit::TestCase
     end
   end
 
+  sub_test_case "Class methods" do
+    test "timestamp" do
+      mock(User).col(:created_at, Time, null: false)
+      mock(User).col(:updated_at, Time, null: false)
+      User.timestamp
+    end
+  end
+
   sub_test_case "User" do
     test "User.table_name" do
       assert_equal :users, User.table_name
@@ -63,6 +71,27 @@ class ModelTest < Test::Unit::TestCase
 
     test "@user.literal_id" do
       assert_equal :id, @user.literal_id
+    end
+
+    test "timestamp at update" do
+      now = Time.now
+      mock(Time).now { now }
+      assert @user.set_timestamp(at: :update)
+      assert_equal now, @user.updated_at
+      assert_nil @user.created_at
+    end
+
+    test "timestamp at create" do
+      now = Time.now
+      mock(Time).now.times(2) { now }
+      assert @user.set_timestamp(at: :create)
+      assert_equal now, @user.updated_at
+      assert_equal now, @user.created_at
+    end
+
+    test "no timestamp updated" do
+      @user.instance_variable_set :@timestamp, false
+      assert_equal false, @user.set_timestamp(at: :create)
     end
   end
 
