@@ -1,0 +1,46 @@
+
+namespace "db" do
+  desc "Create database"
+  task :create_database do
+    sql = <<~SQL
+      CREATE DATABASE #{ENV['PGDATABASE']}
+        TEMPLATE template0 ENCODING 'UTF-8' LC_COLLATE 'C' LC_CTYPE 'C';
+    SQL
+    sh "psql postgres -c \"#{sql}\""
+  end
+
+  desc "Drop database"
+  task :drop_database do
+    sql = <<~SQL
+      DROP DATABASE #{ENV['PGDATABASE']};
+    SQL
+    sh "psql postgres -c \"#{sql}\""
+  end
+
+  desc "Migrate schema"
+  task :migrate do
+    Rake::Task['db:__migrate'].invoke("")
+  end
+
+  desc "Migrate schema (--dry-run)"
+  task :migrate_dry_run do
+    Rake::Task['db:__migrate'].invoke("--dry-run")
+  end
+
+  task :__migrate, ['opt'] do |_t, args|
+    sh "bundle exec aurora-data-api export"
+    sh "/home/ec2-user/bin/psqldef -h #{ENV['PGHOST']} #{ENV['PGDATABASE']} #{args.opt} < ./db/schema.sql"
+  end
+
+  desc "Export schema"
+  task :export do
+    sh "/home/ec2-user/bin/psqldef -h #{ENV['PGHOST']} #{ENV['PGDATABASE']} --export"
+  end
+
+  desc "List database"
+  task :list_database do
+    sh "psql postgres -c " + <<~SQL
+      'select datname, datdba, encoding, datcollate, datctype from pg_database;'
+    SQL
+  end
+end

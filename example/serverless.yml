@@ -1,0 +1,172 @@
+service: aurora-data-api-example
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: ruby2.7
+  stage: ${opt:stage, self:custom.defaultStage}
+  endpointType: REGIONAL
+  region: ap-northeast-1
+  environment:
+    STAGE: ${sls:stage}
+    TZ: Asia/Tokyo
+    DATA_API_ENDPOINT:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - !GetAtt "RDSCluster.Endpoint.Address"
+    RDS_RESOURCE_ARN: ${self:custom.db_resource_arn}
+    RDS_SECRET_ARN: !Ref DBSecret
+    PGDATABASE: ${self:custom.myEnvironment.PGDATABASE}
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action: lambda:InvokeFunction
+          Resource:
+            - !Join
+              - ""
+              - - "arn:aws:lambda:${self:provider.region}:"
+                - !Ref AWS::AccountId
+                - ":function:"
+                - "*"
+        - Effect: "Allow"
+          Action: secretsmanager:GetSecretValue
+          Resource:
+            - !Ref DBSecret
+        - Effect: "Allow"
+          Action:
+            - rds-data:BatchExecuteStatement
+            - rds-data:BeginTransaction
+            - rds-data:CommitTransaction
+            - rds-data:ExecuteStatement
+            - rds-data:RollbackTransaction
+          Resource:
+            - ${self:custom.db_resource_arn}
+  logs:
+    restApi:
+      accessLogging: true
+      format: '{"requestId":"$context.requestId","ip":"$context.identity.sourceIp","requestTime":"$context.requestTime","httpMethod":"$context.httpMethod","routeKey":"$context.routeKey","status":"$context.status","protocol":"$context.protocol","responseLength":"$context.responseLength","errorMessage":"$context.integrationErrorMessage"}'
+      executionLogging: true
+      level: INFO
+      fullExecutionData: true
+
+plugins:
+  - serverless-offline
+  - serverless-vpc-plugin
+  - serverless-ruby-layer
+
+custom:
+  defaultStage: offline
+  serverless-offline:
+    httpPort: 4000
+  db_resource_arn: !Join
+    - ""
+    - - "arn:aws:rds:${self:provider.region}:"
+      - !Ref AWS::AccountId
+      - ":cluster:"
+      - !Ref RDSCluster
+  myEnvironment:
+    DBMaxCapacity:
+      prod: 4
+    PGDATABASE: mydatabase
+    ALLOWED_ORIGIN:
+      offline: http://localhost:4000
+      prod: "*"  # TODO: You have to specify it
+  vpcConfig:
+    # see https://www.serverless.com/plugins/serverless-vpc-plugin
+    enabled: true
+    cidrBlock: '10.0.0.0/16'
+    createNatGateway: false
+    createNetworkAcl: false
+    createDbSubnet: true
+    createFlowLogs: false
+    createBastionHost: false
+    createNatInstance: false
+    createParameters: true
+    services:
+      - secretsmanager
+    subnetGroups:
+      - rds
+    exportOutputs: true
+
+resources:
+  Resources:
+    RDSCluster:
+      Type: AWS::RDS::DBCluster
+      Properties:
+        DBClusterIdentifier: !Sub "${self:service}-${self:provider.stage}-aurora-psql"
+        MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:username}}' ]]
+        MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref DBSecret, ':SecretString:password}}' ]]
+        DatabaseName: ${self:custom.myEnvironment.PGDATABASE}
+        Engine: aurora-postgresql
+        EngineMode: serverless
+        EnableHttpEndpoint: true
+        EngineVersion: 10.14
+        ScalingConfiguration:
+          AutoPause: true
+          MaxCapacity: ${self:custom.myEnvironment.DBMaxCapacity.${sls:stage}, 2}
+          MinCapacity: 2
+          SecondsUntilAutoPause: 900 # 15 min for example
+        DBSubnetGroupName:
+          Ref: DBSubnetGroup
+    DBSecret:
+      Type: AWS::SecretsManager::Secret
+      Properties:
+        Name: !Sub "${self:service}-${self:provider.stage}-AuroraUserSecret"
+        Description: RDS database auto-generated user password
+        GenerateSecretString:
+          SecretStringTemplate: !Sub '{"username": "${self:provider.stage}Root"}'
+          GenerateStringKey: "password"
+          PasswordLength: 30
+          ExcludeCharacters: '"@/\'
+    DBSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupDescription: CloudFormation managed DB subnet group.
+        SubnetIds:
+          - !Ref "DBSubnet1"
+          - !Ref "DBSubnet2"
+          - !Ref "DBSubnet3"
+
+functions:
+  hello:
+    handler: app/handlers/main.hello
+    events:
+      - http:
+          path: hello
+          method: get
+  users:
+    handler: app/handlers/main.users
+    events:
+      - http:
+          path: users
+          method: get
+  create_user:
+    handler: app/handlers/main.create_user
+    events:
+      - http:
+          path: create_user
+          method: post
+  entries:
+    handler: app/handlers/main.entries
+    events:
+      - http:
+          path: entries
+          method: get
+  create_entry:
+    handler: app/handlers/main.create_entry
+    events:
+      - http:
+          path: create_entry
+          method: post
+  delete_entry:
+    handler: app/handlers/main.delete_entry
+    events:
+      - http:
+          path: delete_entry
+          method: post
+
+
+

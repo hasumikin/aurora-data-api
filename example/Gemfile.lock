@@ -1,0 +1,48 @@
+GIT
+  remote: https://github.com/hasumikin/aurora-data-api.git
+  revision: e32e885795da1fd53e8e509ded9d5271201bb15f
+  specs:
+    aurora-data-api (0.1.0)
+      aws-sdk-rdsdataservice (~> 1.35.0)
+      thor
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    aws-eventstream (1.2.0)
+    aws-partitions (1.594.0)
+    aws-sdk-core (3.131.1)
+      aws-eventstream (~> 1, >= 1.0.2)
+      aws-partitions (~> 1, >= 1.525.0)
+      aws-sigv4 (~> 1.1)
+      jmespath (~> 1, >= 1.6.1)
+    aws-sdk-lambda (1.84.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
+      aws-sigv4 (~> 1.1)
+    aws-sdk-rdsdataservice (1.35.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
+      aws-sigv4 (~> 1.1)
+    aws-sigv4 (1.5.0)
+      aws-eventstream (~> 1, >= 1.0.2)
+    jmespath (1.6.1)
+    power_assert (2.0.1)
+    rake (13.0.6)
+    rr (3.0.9)
+    test-unit (3.5.3)
+      power_assert
+    test-unit-rr (1.0.5)
+      rr (>= 1.1.1)
+      test-unit (>= 2.5.2)
+    thor (1.2.1)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  aurora-data-api!
+  aws-sdk-lambda
+  rake
+  test-unit-rr
+
+BUNDLED WITH
+   2.3.14
