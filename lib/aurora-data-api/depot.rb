@@ -87,6 +87,7 @@ module AuroraDataApi
     end
 
     def column_data(meta, col)
+      return nil if col.is_null
       case meta.type_name
       when "text"
         col.value.gsub("''", "'")
