@@ -19,6 +19,10 @@ module AuroraDataApi
       @table_name ||= Model::SCHEMA[@model.name.to_sym][:table_name] || "#{@model.to_s.downcase}s"
     end
 
+    def literal_id
+      @literal_id ||= Model::SCHEMA[@model.name.to_sym][:literal_id] || :id
+    end
+
     def insert(obj)
       obj.set_timestamp(at: :create)
       params = obj.build_params
@@ -51,6 +55,13 @@ module AuroraDataApi
       true
     end
 
+    def count(str = "", **params)
+      query(
+        "SELECT COUNT(\"#{literal_id}\") FROM \"#{table_name}\" #{str};",
+        **params
+      ).records[0][0].long_value
+    end
+
     def select(str, **params)
       result = query("select * from \"#{table_name}\" #{str};", **params)
       related_objects = {}
@@ -74,7 +85,7 @@ module AuroraDataApi
         end
         relationships.each do |name, data|
           related_objects[name] ||= {}
-          id = data[:attr][Model::SCHEMA[@model.name.to_sym][:literal_id]]
+          id = data[:attr][literal_id]
           obj = related_objects.dig(name, id)
           unless obj
             obj = Kernel.const_get(data[:model]).new(**data[:attr])

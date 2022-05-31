@@ -6,14 +6,17 @@ module AuroraDataApi
     @model: untyped
     @data_service: DataService
     @table_name: String
+    @literal_id: Symbol
 
     def self.[]: (singleton(Model) model) -> Depot
     def initialize: (singleton(Model) model, Proc block) -> void
     def table_name: -> String
-    def insert: (untyped obj) -> untyped
-    def update: (untyped obj) -> true
-    def delete: (untyped obj) -> true
-    def select: (untyped str, **untyped) -> untyped
+    def literal_id: -> Symbol
+    def insert: (Model obj) -> untyped
+    def update: (Model obj) -> true
+    def delete: (Model obj) -> true
+    def count: (?String str, **untyped) -> Integer
+    def select: (String str, **untyped) -> untyped
     def column_data: (untyped meta, untyped col) -> untyped
     def query: (String str, **untyped) -> untyped
   end

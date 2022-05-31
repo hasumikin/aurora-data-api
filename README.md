@@ -138,13 +138,24 @@ EntryDepot.update(my_entry)
 EntryDepot.delete(my_entry)
 ```
 
+### Count comments
+
+```ruby
+count = CommentDepot.count(
+  "WHERE entry_id = :entry_id",
+  entry_id: my_entry.id
+)
+```
+
 ### Select comments
 
 ```ruby
-comments = CommentDepot.select(
-  "inner join entry on entry.id = comment.entry_id where entry.user_id = :user_id",
-  user_id: hasumikin.id
-)
+comments = CommentDepot.select(<<~SQL, user_id: hasumikin.id)
+  INNER JOIN ENTRY ON entry.id = comment.entry_id
+  WHERE entry.user_id = :user_id
+  ORDER BY comment.created_at
+  LIMIT 10 OFFSET 0
+SQL
 comments.class                 # => Array
 comments.first.class           # => Comment
 comments.first.body            # => "I have a question, ..."
