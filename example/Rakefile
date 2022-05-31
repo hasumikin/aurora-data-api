@@ -1,7 +1,7 @@
 
 namespace "db" do
   desc "Create database"
-  task :create_database do
+  task :create do
     sql = <<~SQL
       CREATE DATABASE #{ENV['PGDATABASE']}
         TEMPLATE template0 ENCODING 'UTF-8' LC_COLLATE 'C' LC_CTYPE 'C';
@@ -10,7 +10,7 @@ namespace "db" do
   end
 
   desc "Drop database"
-  task :drop_database do
+  task :drop do
     sql = <<~SQL
       DROP DATABASE #{ENV['PGDATABASE']};
     SQL

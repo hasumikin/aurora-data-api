@@ -108,7 +108,7 @@ resources:
           AutoPause: true
           MaxCapacity: ${self:custom.myEnvironment.DBMaxCapacity.${sls:stage}, 2}
           MinCapacity: 2
-          SecondsUntilAutoPause: 900 # 15 min for example
+          SecondsUntilAutoPause: 3600 # 60 min for example
         DBSubnetGroupName:
           Ref: DBSubnetGroup
     DBSecret:

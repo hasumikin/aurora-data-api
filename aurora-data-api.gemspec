@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["hasumikin@gmail.com"]
 
   spec.summary = "A kind of ORM for Amazon Aurora Serverless v1"
-  spec.description = "Assuming you are using AWS Lambda as a backend, Aurora Serverless v1 (NOT v2) as a database, and Data API as an adapter"
+  spec.description = "Doesn't depend on ActiveRecord and takes advantage of PORO (plain old Ruby object) like Array, Hash, and Struct internally so you can easily hack."
   spec.homepage = "https://github.com/hasumikin/aurora-data-api"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.7.0"

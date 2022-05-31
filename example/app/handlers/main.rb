@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-Dir.glob("/var/runtime/bundler/gems/**").each do |dir|
-  $LOAD_PATH.unshift("#{dir}/lib/")
-end
-
 require "json"
 require "aurora-data-api"
 require_relative "../depots/user_depot"

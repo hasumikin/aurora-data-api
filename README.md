@@ -2,7 +2,9 @@
 
 A kind of ORM for Amazon Aurora Serverless v1.
 
-Supposing that you are using Ruby (typically on AWS Lambda) as an application, Aurora Serverless v1 (NOT v2) as a database, and Data API as the database adapter.
+Supposing that you are using Ruby (typically on AWS Lambda) as an application, Aurora Serverless v1 (NOT v2) as a database, and Data API as a database adapter.
+
+This gem doesn't depend on ActiveRecord and takes advantage of PORO (plain old Ruby object) like Array, Hash, and Struct internally so you can easily hack.
 
 PostgreSQL is the only target as of now.
 
@@ -216,6 +218,10 @@ ENV['RDS_SECRET_ARN']   # Secret ARN that is stored in AWS Secrets Manager
 ```
 
 RDS_SECRET_ARN has to be attached to an IAM role of the "application".
+
+## Example project with Serverless Project
+
+See [example](https://github.com/hasumikin/aurora-data-api/tree/master/example)
 
 ## Development
 
