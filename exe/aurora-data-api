@@ -121,7 +121,7 @@ module AuroraDataApi
       end
       if Schema::CREATE_TABLE.empty? && Schema::ALTER_TABLE.empty?
         puts "Nothing to be exported."
-        exit
+        exit 1
       end
       overwrite = false
       if File.exist? output_path
@@ -131,7 +131,7 @@ module AuroraDataApi
           overwrite = true
         else
           puts "Abort."
-          exit
+          exit 1
         end
       else
         FileUtils.touch output_path
