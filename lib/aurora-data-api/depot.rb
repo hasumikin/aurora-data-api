@@ -38,7 +38,7 @@ module AuroraDataApi
 
     def update(obj)
       obj.set_timestamp(at: :update)
-      params = obj.build_params(include_id: true)
+      params = obj.build_params
       query(<<~SQL, **params)
         UPDATE "#{obj.table_name}" SET
           #{params.keys.reject { |k| k == obj.literal_id }.map { |k| "\"#{k}\" = :#{k}" }.join(", ")}

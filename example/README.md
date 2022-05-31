@@ -31,6 +31,10 @@ curl -X POST http://localhost:4000/offline/create_user \
 -H 'Content-Type: application/json' \
 -d '{"name":"HASUMI Hitoshi", "internet_account":"hasumikin"}'
 
+curl -X PUT http://localhost:4000/offline/update_user \
+-H 'Content-Type: application/json' \
+-d '{"id":1, "name":"anonymous", "internet_account":"hasumikin"}'
+
 curl -X POST http://localhost:4000/offline/create_entry \
 -H 'Content-Type: application/json' \
 -d '{"title":"My first atrticle", "user_id":1}'

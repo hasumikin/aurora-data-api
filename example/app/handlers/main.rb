@@ -35,6 +35,18 @@ def create_user(event:, context:)
   }
 end
 
+def update_user(event:, context:)
+  params = JSON.parse(event["body"])
+  user = UserDepot.select("where id = :id", id: params["id"]).first
+  user.name = params["name"]
+  user.internet_account = params["internet_account"]
+  UserDepot.update(user)
+  {
+    statusCode: 201,
+    body: { user: user.attributes }.to_json
+  }
+end
+
 def count_entry(event:, context:)
   count = EntryDepot.count
   {

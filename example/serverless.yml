@@ -149,6 +149,12 @@ functions:
       - http:
           path: create_user
           method: post
+  update_user:
+    handler: app/handlers/main.update_user
+    events:
+      - http:
+          path: update_user
+          method: put
   entries:
     handler: app/handlers/main.entries
     events:
