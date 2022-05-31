@@ -29,7 +29,7 @@ curl http://localhost:4000/offline/hello
 ```sh
 curl -X POST http://localhost:4000/offline/create_user \
 -H 'Content-Type: application/json' \
--d '{"name":"HAUMI Hitoshi", "internet_account":"hasumikin"}'
+-d '{"name":"HASUMI Hitoshi", "internet_account":"hasumikin"}'
 
 curl -X POST http://localhost:4000/offline/create_entry \
 -H 'Content-Type: application/json' \

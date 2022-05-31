@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/hasumikin/aurora-data-api.git
-  revision: e32e885795da1fd53e8e509ded9d5271201bb15f
+  revision: 70ae5070c8391c6be2ac9b4209425308ed01f2e7
   specs:
     aurora-data-api (0.1.0)
       aws-sdk-rdsdataservice (~> 1.35.0)

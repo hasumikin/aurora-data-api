@@ -167,6 +167,12 @@ functions:
       - http:
           path: delete_entry
           method: post
+  count_entry:
+    handler: app/handlers/main.count_entry
+    events:
+      - http:
+          path: count_entry
+          method: get
 
 
 

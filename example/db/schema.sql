@@ -2,7 +2,7 @@
  * This file was automatically genarated by the command:
  *   aurora-data-api export --models app/models --output db/schema.sql
  *
- * Genarated at 2022-05-30 19:35:43 +0900
+ * Genarated at 2022-05-31 10:24:29 +0900
  *
  * https://github.com/hasumikin/aurora-data-api
  */

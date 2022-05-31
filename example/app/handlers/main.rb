@@ -35,8 +35,22 @@ def create_user(event:, context:)
   }
 end
 
+def count_entry(event:, context:)
+  count = EntryDepot.count
+  {
+    statusCode: 200,
+    body: { count: count }.to_json
+  }
+end
+
 def entries(event:, context:)
-  entries = EntryDepot.select("order by id limit 10")
+  entries = EntryDepot.select(
+    "inner join users on users.id = entries.user_id order by entries.id limit 10"
+  )
+  #
+  # (Note) This also works but N+1 query happens:
+  #   EntryDepot.select("order by id limit 10")
+  #
   {
     statusCode: 200,
     body: { entries: entries.map(&:attributes) }.to_json
