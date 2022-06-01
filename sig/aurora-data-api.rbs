@@ -2,9 +2,6 @@ module AuroraDataApi
   Error: StandardError
 end
 
-class Date
-end
-
 module Aws
   def self.config: -> Hash[Symbol, untyped]
 

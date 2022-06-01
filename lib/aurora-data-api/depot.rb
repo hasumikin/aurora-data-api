@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "date"
+
 module AuroraDataApi
   class Depot
     def self.[](model, &block)
@@ -104,6 +106,8 @@ module AuroraDataApi
         col.value.gsub("''", "'")
       when "timestamptz"
         Time.parse(col.value) + 9 * 60 * 60 # workaround
+      when "date"
+        Date.parse(col.value)
       else
         col.value
       end

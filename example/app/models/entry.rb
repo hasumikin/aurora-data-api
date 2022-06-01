@@ -6,6 +6,7 @@ class Entry < AuroraDataApi::Model
     col :user,  :User, table: :users, null: false
     col :title, String
     col :body,  String
+    col :publish_date, Date
     timestamp
   end
 end
