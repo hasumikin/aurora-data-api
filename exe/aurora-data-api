@@ -3,6 +3,7 @@
 require "aurora-data-api/version"
 require "thor"
 require "date"
+require "fileutils"
 
 module AuroraDataApi
   class Error < StandardError; end
