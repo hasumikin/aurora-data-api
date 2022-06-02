@@ -1,3 +1,7 @@
+## 0.1.3 - 2022-06-02
+
+- Bundle tzinfo 😅
+
 ## 0.1.2 - 2022-06-02
 
 - Fix inconsistency of version in Gemfile.lock

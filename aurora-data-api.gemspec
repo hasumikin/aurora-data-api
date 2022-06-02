@@ -31,4 +31,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "aws-sdk-rdsdataservice", "~> 1.35.0"
   spec.add_dependency "thor"
+  spec.add_dependency "tzinfo"
 end
