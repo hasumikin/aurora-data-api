@@ -1,0 +1,9 @@
+module TZInfo
+  class Timezone
+    def self.get: (String) -> DataTimezone
+  end
+
+  class DataTimezone
+    def observed_utc_offset: -> Integer
+  end
+end
