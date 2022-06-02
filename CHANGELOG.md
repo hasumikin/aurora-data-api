@@ -1,3 +1,7 @@
+## 0.1.2 - 2022-06-02
+
+- Fix inconsistency of version in Gemfile.lock
+
 ## 0.1.1 - 2022-06-02
 
 - Fix some issues (experimental)
