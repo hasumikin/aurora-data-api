@@ -215,6 +215,7 @@ The following variables should be defined:
 ENV['PGDATABASE']       # Database name
 ENV['RDS_RESOURCE_ARN'] # Resource ARN of RDS Aurora Serverless
 ENV['RDS_SECRET_ARN']   # Secret ARN that is stored in AWS Secrets Manager
+ENV['TZ']               # (Optional) Timezone. Internal default is "UTC"
 ```
 
 RDS_SECRET_ARN has to be attached to an IAM role of the "application".

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "date"
+require "tzinfo"
 
 module AuroraDataApi
   class Depot
@@ -15,6 +16,7 @@ module AuroraDataApi
       @model = model
       instance_eval { block.call }
       @data_service = DataService.new
+      @observed_utc_offset = TZInfo::Timezone.get(ENV['TZ'] || "UTC").observed_utc_offset
     end
 
     def table_name
@@ -105,7 +107,7 @@ module AuroraDataApi
       when "text"
         col.value.gsub("''", "'")
       when "timestamptz"
-        Time.parse(col.value) + 9 * 60 * 60 # workaround
+        Time.parse(col.value) + @observed_utc_offset
       when "date"
         Date.parse(col.value)
       else
