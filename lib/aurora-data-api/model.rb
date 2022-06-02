@@ -44,7 +44,7 @@ module AuroraDataApi
     end
 
     def self.relationship_by(table_sym)
-      result = Model::SCHEMA[name&.to_sym].select { |_k, v|
+      result = Model::SCHEMA[to_s.to_sym].select { |_k, v|
         v.is_a? Hash
       }.select { |_k, v|
         v.dig(:opt, :table) == table_sym
@@ -94,7 +94,7 @@ module AuroraDataApi
         if @struct[method_name].nil?
           col_id = "#{method_name}_#{literal_id}".to_sym
           if members.include?(col_id) && @struct[col_id]
-            col_model = SCHEMA[self.class.name&.to_sym][:cols].dig(method_name, :type)
+            col_model = SCHEMA[self.class.to_s.to_sym][:cols].dig(method_name, :type)
             return nil unless col_model
             @struct[method_name] = AuroraDataApi.const_get("#{col_model}Depot".to_sym).select(
               %(where "#{literal_id}" = :id), id: @struct[col_id]
@@ -109,7 +109,7 @@ module AuroraDataApi
     end
 
     def table_name
-      SCHEMA[self.class.name&.to_sym][:table_name]
+      SCHEMA[self.class.to_s.to_sym][:table_name]
     end
 
     def literal_id
@@ -120,7 +120,7 @@ module AuroraDataApi
       {}.tap do |hash|
         members.each do |member|
           next if member == literal_id && !include_id
-          next if SCHEMA[self.class.name&.to_sym][:cols][member][:type].is_a? Symbol
+          next if SCHEMA[self.class.to_s.to_sym][:cols][member][:type].is_a? Symbol
           send(member).then { |v| hash[member] = v }
         end
       end

@@ -2,20 +2,32 @@
 
 # Classes
 module AuroraDataApi
+  type attribute = Symbol | Time | Date | Integer | Symbol | bool | nil
+  type attribute_type = singleton(String)
+                      | singleton(Time)
+                      | singleton(Date)
+                      | singleton(Integer)
+                      | Symbol
+
   class Model
-    SCHEMA: Hash[untyped, untyped]
-    STRUCTS: Hash[untyped, untyped]
+    SCHEMA: Hash[Symbol, untyped]
+    STRUCTS: Hash[Symbol, untyped]
     @struct: untyped
+
+    type col_opt = Hash[:table, Symbol]
+                 | Hash[:null, bool]
+                 | Hash[:unique, bool]
+                 | Hash[:default, untyped]
 
     def self.model_name: -> Symbol
     def self.literal_id: (Symbol lit) -> Symbol
     def self.table: (Symbol name) -> Symbol
     def self.table_name: -> Symbol
     def self.schema: () { () -> void } -> void
-    def self.col: (Symbol name, singleton(String) | singleton(Time) | singleton(Date) | singleton(Integer) | Symbol type, ?Hash[Symbol, Symbol | bool] opt) -> void
+    def self.col: (Symbol name, attribute_type type, ?col_opt opt) -> void
     def self.timestamp: -> void
     def self.relationship_by: (Symbol table_sym) -> [untyped, untyped]?
-    def initialize: (**Hash[Symbol, untyped]) -> void
+    def initialize: (**Hash[Symbol, attribute]) -> void
 
     attr_reader id: Integer?
     attr_reader timestamp: bool
@@ -25,11 +37,11 @@ module AuroraDataApi
     def set_timestamp: (at: :update | :create) -> bool
     def members: -> Array[Symbol]
     def respond_to_missing?: (untyped symbol, untyped include_private) -> true
-    def method_missing: (untyped method_name, *untyped args) -> nil
+    def method_missing: (Symbol method_name, *untyped args) -> nil
     def table_name: -> Symbol
     def literal_id: -> Symbol
-    def build_params: (?include_id: bool) -> Hash[Symbol, untyped]
-    def attributes: -> Hash[Symbol, untyped]
+    def build_params: (?include_id: bool) -> Hash[Symbol, attribute]
+    def attributes: -> Hash[Symbol, attribute]
     def _set_id: (Integer? id) -> void
     def _destroy: -> bool
   end
