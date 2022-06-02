@@ -16,7 +16,7 @@ module AuroraDataApi
       @model = model
       instance_eval { block.call }
       @data_service = DataService.new
-      @observed_utc_offset = TZInfo::Timezone.get(ENV['TZ'] || "UTC").observed_utc_offset
+      @observed_utc_offset = TZInfo::Timezone.get(ENV["TZ"] || "UTC").observed_utc_offset
     end
 
     def table_name
