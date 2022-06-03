@@ -3,7 +3,7 @@
 FROM lambci/lambda:build-ruby2.7
 
 RUN curl -sL https://rpm.nodesource.com/setup_12.x | bash - \
-  && yum -y install nodejs postgresql wget && yum -y clean all
+  && yum -y install nodejs postgresql vim wget && yum -y clean all
 
 RUN mkdir /home/ec2-user && chown ec2-user /home/ec2-user
 RUN mkdir /home/ec2-user/bin && chown ec2-user /home/ec2-user/bin
