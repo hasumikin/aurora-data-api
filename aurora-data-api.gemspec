@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
     end
   end
   spec.bindir = "exe"
-  spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
+  spec.executables = "aurora-data-api"
   spec.require_paths = ["lib"]
 
   spec.add_dependency "aws-sdk-rdsdataservice", "~> 1.35.0"
