@@ -1,0 +1,8 @@
+module FileUtils
+  type params_type = Hash[:mtime, Time]
+                   | Hash[:nocreate, bool]
+                   | Hash[:noop, bool]
+                   | Hash[:verbose, bool]
+
+  def self.touch: (String | Array[String] list, ?params_type params)-> void
+end

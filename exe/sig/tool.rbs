@@ -1,0 +1,21 @@
+# TypeProf 0.21.2
+
+# Global variables
+$thor_runner: false
+
+# Classes
+module AuroraDataApi
+  class Error < StandardError
+  end
+
+  class Tool < Thor
+    DEFAULT_MODELS_DIR: String
+    DEFAULT_OUTPUT_PATH: String
+
+    def self.option: (:models | :output, aliases: Symbol, default: String) -> void
+    def options: -> Hash[:models | :output, String]
+
+    def version: -> nil
+    def export: -> void
+  end
+end

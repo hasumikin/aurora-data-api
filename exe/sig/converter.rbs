@@ -1,0 +1,25 @@
+# TypeProf 0.21.2
+
+# Classes
+module AuroraDataApi
+  class Converter
+    TYPES: Hash[singleton(Date)
+                | singleton(Float)
+                | singleton(Integer)
+                | singleton(String)
+                | singleton(Time)
+                | singleton(AuroraDataApi::Type::Boolean),
+                String]
+    @table_name: String
+    @literal_id: untyped
+
+    def initialize: (untyped schema, untyped klass) -> void
+    attr_reader create_table: Array[String]
+    attr_reader alter_table: Array[String]
+    def head: -> Array[String]
+    def tail: -> Array[String]
+    def timestamp: -> Array[String]
+    def col: (untyped name, untyped `type`, **untyped) -> Array[String]
+    def instance_eval: () { () -> void } -> void
+  end
+end

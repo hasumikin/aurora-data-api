@@ -1,0 +1,6 @@
+module AuroraDataApi
+  module Type
+    class Boolean
+    end
+  end
+end

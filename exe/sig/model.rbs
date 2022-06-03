@@ -1,0 +1,12 @@
+# TypeProf 0.21.2
+
+# Classes
+module AuroraDataApi
+  class Model
+    SCHEMA: Hash[Symbol, untyped]
+
+    def self.literal_id: (Symbol lit) -> void
+    def self.table: (Symbol name) -> void
+    def self.schema: () { () -> void } -> void
+  end
+end

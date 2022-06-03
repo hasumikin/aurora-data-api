@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'aurora-data-api'
+gem 'aurora-data-api', github: "hasumikin/aurora-data-api"
 gem 'aws-sdk-lambda'
 
 group :test, :development do

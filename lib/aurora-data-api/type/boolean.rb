@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
 module AuroraDataApi
-  VERSION = "0.1.4"
+  module Type
+    class Boolean
+    end
+  end
 end

@@ -1,0 +1,9 @@
+# TypeProf 0.21.2
+
+# Classes
+module AuroraDataApi
+  class Schema
+    CREATE_TABLE: Array[untyped]
+    ALTER_TABLE: Array[untyped]
+  end
+end

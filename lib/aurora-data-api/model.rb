@@ -55,6 +55,7 @@ module AuroraDataApi
     def initialize(**params)
       @struct = STRUCTS[self.class.model_name].new
       @timestamp = %i[created_at updated_at].all? { |m| members.include?(m) }
+      # @type var params: Hash[Symbol, attribute_value]
       params.each do |col, val|
         if col == literal_id
           @id = val if val.is_a?(Integer)
@@ -87,7 +88,9 @@ module AuroraDataApi
       if string_name[-1] == "="
         @struct[string_name.chop] = args[0]
       elsif string_name[-3, 3] == "_#{literal_id}"
-        @struct[string_name.sub(/_#{literal_id}\z/, "")]&.id || @struct[method_name]
+        @struct[string_name.sub(/_#{literal_id}\z/, "")].then do |rel|
+          rel.is_a?(Model) ? rel.id : @struct[method_name]
+        end
       elsif method_name == literal_id
         @id
       elsif members.include?(method_name)

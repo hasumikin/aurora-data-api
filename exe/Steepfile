@@ -1,0 +1,5 @@
+target :cli do
+  signature "sig"
+  check "cli"
+  library "time", "date"
+end

@@ -1,0 +1,4 @@
+class Thor
+  def self.desc: (String, String) -> void
+end
+

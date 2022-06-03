@@ -11,8 +11,16 @@ end
 
 require "standard/rake"
 
-task default: %i[test steep standard]
+task default: %i[test steep steep_cli standard]
 
+desc "Steep check lib"
 task :steep do
   sh "bundle exec steep check"
+end
+
+desc "Steep check exe/cli"
+task :steep_cli do
+  FileUtils.cd "exe" do
+    sh "bundle exec steep check"
+  end
 end

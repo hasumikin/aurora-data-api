@@ -4,6 +4,7 @@ class User < AuroraDataApi::Model
   schema do
     col :name,             String
     col :internet_account, String
+    col :banned,           ::AuroraDataApi::Type::Boolean, default: false
     timestamp
   end
 
